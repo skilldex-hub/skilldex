@@ -12,7 +12,7 @@ uvx skilldex install fetch            # MCP server → ./.mcp.json
 uvx skilldex install code-reviewer -p # subagent → ./.claude/agents (project scope)
 ```
 
-Entries come from the community-maintained [skilldex-registry](https://github.com/drewn-ed/skilldex-registry) — every entry is CI-validated before it's merged.
+Entries come from the community-maintained [skilldex-registry](https://github.com/drewn-ed/skilldex-registry) — every entry is CI-validated before it's merged. Browse it in your browser at [drewn-ed.github.io/skilldex-registry](https://drewn-ed.github.io/skilldex-registry/).
 
 ## Install
 
