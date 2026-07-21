@@ -1,6 +1,8 @@
 # skilldex
 
 [![CI](https://github.com/drewn-ed/skilldex/actions/workflows/ci.yml/badge.svg)](https://github.com/drewn-ed/skilldex/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/skilldex)](https://pypi.org/project/skilldex/)
+[![Downloads](https://img.shields.io/pypi/dm/skilldex)](https://pypi.org/project/skilldex/)
 
 **Search, install, validate, and audit Claude Code skills, subagents, and MCP servers — from one community registry.**
 
