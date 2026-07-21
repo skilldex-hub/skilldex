@@ -14,7 +14,7 @@ from rich.table import Table
 from . import __version__
 from .audit import audit as run_audit
 from .installer import agent_dest, install_mcp, install_source, skill_dest
-from .registry import fetch_index, get_entry
+from .registry import fetch_index, get_entry_fresh
 from .registry import search as search_index
 from .validator import check_skill_md, validate_agent_md, validate_entry
 
@@ -78,7 +78,7 @@ def search(
 @app.command()
 def show(entry_id: str = typer.Argument(..., help="Registry entry id.")) -> None:
     """Show the full registry entry."""
-    entry = get_entry(_load_index(), entry_id)
+    entry = get_entry_fresh(_load_index(), entry_id)
     if entry is None:
         console.print(f"[red]No entry with id {entry_id!r}.[/] Try: skilldex search {entry_id}")
         raise typer.Exit(1)
@@ -93,7 +93,7 @@ def install(
     ),
 ) -> None:
     """Install a skill, subagent, or MCP server."""
-    entry = get_entry(_load_index(), entry_id)
+    entry = get_entry_fresh(_load_index(), entry_id)
     if entry is None:
         console.print(f"[red]No entry with id {entry_id!r}.[/] Try: skilldex search {entry_id}")
         raise typer.Exit(1)

@@ -9,7 +9,10 @@ from pathlib import Path
 
 import httpx
 
-DEFAULT_INDEX_URL = (
+# GitHub Pages is primary — raw.githubusercontent's CDN can pin stale variants
+# for a long time, which made freshly merged entries invisible to the CLI.
+DEFAULT_INDEX_URL = "https://drewn-ed.github.io/skilldex-registry/index.json"
+FALLBACK_INDEX_URL = (
     "https://raw.githubusercontent.com/drewn-ed/skilldex-registry/main/index.json"
 )
 CACHE_TTL_SECONDS = 3600
@@ -41,9 +44,16 @@ def fetch_index(force: bool = False) -> dict:
         except (json.JSONDecodeError, OSError):
             pass  # fall through to a fresh fetch
 
-    response = httpx.get(url, follow_redirects=True, timeout=15)
-    response.raise_for_status()
-    data = response.json()
+    try:
+        response = httpx.get(url, follow_redirects=True, timeout=15)
+        response.raise_for_status()
+        data = response.json()
+    except (httpx.HTTPError, json.JSONDecodeError):
+        if url != DEFAULT_INDEX_URL:  # custom URL: no fallback, surface the error
+            raise
+        response = httpx.get(FALLBACK_INDEX_URL, follow_redirects=True, timeout=15)
+        response.raise_for_status()
+        data = response.json()
     CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
     CACHE_PATH.write_text(json.dumps(data), encoding="utf-8")
     return data
@@ -74,3 +84,15 @@ def get_entry(index: dict, entry_id: str) -> dict | None:
         if entry.get("id") == entry_id:
             return entry
     return None
+
+
+def get_entry_fresh(index: dict, entry_id: str, refetch=fetch_index) -> dict | None:
+    """Like get_entry, but on a miss refetch the index once — the local cache
+    (or a CDN edge) may predate a just-merged entry."""
+    entry = get_entry(index, entry_id)
+    if entry is None:
+        try:
+            entry = get_entry(refetch(force=True), entry_id)
+        except (httpx.HTTPError, json.JSONDecodeError, OSError):
+            return None
+    return entry

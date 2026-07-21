@@ -1,5 +1,7 @@
 # skilldex
 
+[![CI](https://github.com/drewn-ed/skilldex/actions/workflows/ci.yml/badge.svg)](https://github.com/drewn-ed/skilldex/actions/workflows/ci.yml)
+
 **Search, install, validate, and audit Claude Code skills, subagents, and MCP servers — from one community registry.**
 
 Claude Code extensions live scattered across hundreds of repos. skilldex gives you a package-manager-style workflow for all three extension types:

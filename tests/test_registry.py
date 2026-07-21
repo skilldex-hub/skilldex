@@ -1,6 +1,8 @@
 import json
 
-from skilldex.registry import fetch_index, get_entry, search
+import httpx
+
+from skilldex.registry import fetch_index, get_entry, get_entry_fresh, search
 
 INDEX = {
     "entries": [
@@ -41,6 +43,25 @@ def test_search_type_filter():
 def test_get_entry():
     assert get_entry(INDEX, "pdf")["name"] == "PDF Toolkit"
     assert get_entry(INDEX, "nope") is None
+
+
+def test_get_entry_fresh_hit_needs_no_refetch():
+    def boom(force=False):
+        raise AssertionError("should not refetch on a hit")
+
+    assert get_entry_fresh(INDEX, "pdf", refetch=boom)["name"] == "PDF Toolkit"
+
+
+def test_get_entry_fresh_refetches_on_miss():
+    fresh = {"entries": INDEX["entries"] + [{"id": "brand-new", "type": "skill", "name": "New"}]}
+    assert get_entry_fresh(INDEX, "brand-new", refetch=lambda force: fresh)["name"] == "New"
+
+
+def test_get_entry_fresh_miss_with_failing_refetch():
+    def fail(force=False):
+        raise httpx.ConnectError("offline")
+
+    assert get_entry_fresh(INDEX, "nope", refetch=fail) is None
 
 
 def test_fetch_index_local_path(tmp_path, monkeypatch):
