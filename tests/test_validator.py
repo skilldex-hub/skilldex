@@ -76,7 +76,10 @@ def test_mcp_entry_rejects_hardcoded_secret():
 
 def test_looks_like_secret():
     assert looks_like_secret("ghp_" + "a" * 30)
+    assert looks_like_secret("sk-" + "a" * 24)
     assert not looks_like_secret("${GITHUB_TOKEN}")
+    # "task-breakdown" contains "sk-" mid-word — must not be flagged
+    assert not looks_like_secret("planning-and-task-breakdown-methodology")
 
 
 def test_parse_frontmatter_roundtrip():

@@ -19,7 +19,7 @@ MAX_BODY_WORDS = 5000
 # Common credential shapes: OpenAI/Anthropic-style keys, GitHub tokens, Slack tokens,
 # AWS access keys, and JWTs.
 SECRET_RE = re.compile(
-    r"(sk-[A-Za-z0-9_-]{8,}"
+    r"((?<![A-Za-z0-9])sk-[A-Za-z0-9_-]{20,}"
     r"|ghp_[A-Za-z0-9]{20,}"
     r"|github_pat_[A-Za-z0-9_]{20,}"
     r"|xox[baprs]-[A-Za-z0-9-]{10,}"
