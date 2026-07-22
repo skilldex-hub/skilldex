@@ -9,7 +9,7 @@
 Claude Code extensions live scattered across hundreds of repos. skilldex gives you a package-manager-style workflow for all three extension types:
 
 ```bash
-# no install needed
+# no install needed (uvx ships with uv — brew install uv)
 uvx skilldex search pdf
 uvx skilldex install pdf              # → ~/.claude/skills/pdf
 uvx skilldex install fetch            # MCP server → ./.mcp.json
