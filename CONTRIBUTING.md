@@ -5,7 +5,7 @@ PRs welcome — this project is intentionally small and readable.
 ## Setup
 
 ```bash
-git clone https://github.com/drewn-ed/skilldex
+git clone https://github.com/skilldex-hub/skilldex
 cd skilldex
 python3 -m venv .venv
 .venv/bin/pip install -e ".[dev]"   # plain `pip install .` also works
@@ -29,4 +29,4 @@ python3 -m venv .venv
 - `ruff check .` and `pytest` must pass (CI runs them on 3.10/3.12/3.13).
 - Keep dependencies minimal — currently typer, rich, httpx, pyyaml.
 - Want to list your skill/agent/MCP server? That PR goes to
-  [skilldex-registry](https://github.com/drewn-ed/skilldex-registry), not here.
+  [skilldex-registry](https://github.com/skilldex-hub/skilldex-hub.github.io), not here.

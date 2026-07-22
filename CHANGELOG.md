@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1 — 2026-07-21
+
+- Project moved to the skilldex-hub organization: registry now lives at
+  https://skilldex-hub.github.io/ and the default index URL points there.
+
 ## 0.1.0 — 2026-07-21
 
 Initial release.

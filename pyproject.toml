@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "skilldex"
-version = "0.1.0"
+version = "0.1.1"
 description = "Search, install, validate, and audit Claude Code skills, subagents, and MCP servers from a community registry."
 readme = "README.md"
 license = { text = "MIT" }
@@ -37,8 +37,8 @@ dev = ["pytest>=8.0", "ruff>=0.6"]
 skilldex = "skilldex.cli:app"
 
 [project.urls]
-Homepage = "https://github.com/drewn-ed/skilldex"
-Registry = "https://github.com/drewn-ed/skilldex-registry"
+Homepage = "https://github.com/skilldex-hub/skilldex"
+Registry = "https://github.com/skilldex-hub/skilldex-hub.github.io"
 
 [tool.ruff]
 line-length = 100

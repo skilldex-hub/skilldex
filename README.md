@@ -1,6 +1,6 @@
 # skilldex
 
-[![CI](https://github.com/drewn-ed/skilldex/actions/workflows/ci.yml/badge.svg)](https://github.com/drewn-ed/skilldex/actions/workflows/ci.yml)
+[![CI](https://github.com/skilldex-hub/skilldex/actions/workflows/ci.yml/badge.svg)](https://github.com/skilldex-hub/skilldex/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/skilldex)](https://pypi.org/project/skilldex/)
 [![Downloads](https://img.shields.io/pypi/dm/skilldex)](https://pypi.org/project/skilldex/)
 
@@ -16,7 +16,7 @@ uvx skilldex install fetch            # MCP server → ./.mcp.json
 uvx skilldex install code-reviewer -p # subagent → ./.claude/agents (project scope)
 ```
 
-Entries come from the community-maintained [skilldex-registry](https://github.com/drewn-ed/skilldex-registry) — every entry is CI-validated before it's merged. Browse it in your browser at [drewn-ed.github.io/skilldex-registry](https://drewn-ed.github.io/skilldex-registry/).
+Entries come from the community-maintained [skilldex-registry](https://github.com/skilldex-hub/skilldex-hub.github.io) — every entry is CI-validated before it's merged. Browse it in your browser at [skilldex-hub.github.io](https://skilldex-hub.github.io/).
 
 ## Install
 
@@ -43,7 +43,7 @@ pip install skilldex        # or: uv tool install skilldex
 ## Registry
 
 Want your skill, subagent, or MCP server listed? Open a PR adding one JSON file to
-[skilldex-registry](https://github.com/drewn-ed/skilldex-registry) — CI validates it automatically,
+[skilldex-registry](https://github.com/skilldex-hub/skilldex-hub.github.io) — CI validates it automatically,
 and `skilldex validate` runs the same checks locally.
 
 Point the CLI at a different (or local) index with `SKILLDEX_REGISTRY_URL`.

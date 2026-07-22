@@ -11,9 +11,9 @@ import httpx
 
 # GitHub Pages is primary — raw.githubusercontent's CDN can pin stale variants
 # for a long time, which made freshly merged entries invisible to the CLI.
-DEFAULT_INDEX_URL = "https://drewn-ed.github.io/skilldex-registry/index.json"
+DEFAULT_INDEX_URL = "https://skilldex-hub.github.io/index.json"
 FALLBACK_INDEX_URL = (
-    "https://raw.githubusercontent.com/drewn-ed/skilldex-registry/main/index.json"
+    "https://raw.githubusercontent.com/skilldex-hub/skilldex-hub.github.io/main/index.json"
 )
 CACHE_TTL_SECONDS = 3600
 CACHE_PATH = Path.home() / ".cache" / "skilldex" / "index.json"
