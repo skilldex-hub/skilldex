@@ -56,8 +56,17 @@ def _download_dir(repo: str, path: str, ref: str | None, dest: Path) -> None:
             (dest / item["name"]).write_bytes(response.content)
 
 
+def user_mcp_config() -> Path:
+    """Claude Code's user-wide config — servers here load in every session."""
+    return Path.home() / ".claude.json"
+
+
 def install_mcp(entry: dict, config_path: Path | None = None) -> Path:
-    """Merge the entry's MCP server definition into the project's .mcp.json."""
+    """Merge the entry's MCP server definition into an MCP config file.
+
+    Defaults to the project's ./.mcp.json; pass user_mcp_config() for a
+    user-wide install. Other keys in the target file are preserved.
+    """
     config_path = config_path or Path.cwd() / ".mcp.json"
     config = json.loads(config_path.read_text(encoding="utf-8")) if config_path.exists() else {}
     servers = config.setdefault("mcpServers", {})

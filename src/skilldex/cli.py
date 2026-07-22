@@ -13,7 +13,7 @@ from rich.table import Table
 
 from . import __version__
 from .audit import audit as run_audit
-from .installer import agent_dest, install_mcp, install_source, skill_dest
+from .installer import agent_dest, install_mcp, install_source, skill_dest, user_mcp_config
 from .registry import fetch_index, get_entry_fresh
 from .registry import search as search_index
 from .validator import check_skill_md, validate_agent_md, validate_entry
@@ -91,14 +91,28 @@ def install(
     project: bool = typer.Option(
         False, "--project", "-p", help="Install into ./.claude instead of ~/.claude."
     ),
+    global_: bool = typer.Option(
+        False,
+        "--global",
+        "-g",
+        help="MCP servers: register user-wide (every session) instead of this project only.",
+    ),
 ) -> None:
     """Install a skill, subagent, or MCP server."""
+    if project and global_:
+        console.print("[red]--project and --global are mutually exclusive.[/]")
+        raise typer.Exit(2)
     entry = get_entry_fresh(_load_index(), entry_id)
     if entry is None:
         console.print(f"[red]No entry with id {entry_id!r}.[/] Try: skilldex search {entry_id}")
         raise typer.Exit(1)
 
     etype = entry.get("type")
+    if global_ and etype != "mcp":
+        console.print(
+            f"[yellow]Note:[/] {etype}s are user-wide by default — --global only changes "
+            "MCP installs. Installing normally."
+        )
     if etype == "skill":
         dest = install_source(entry, skill_dest(project))
         console.print(f"[green]Installed skill[/] {entry_id} → {dest}")
@@ -106,8 +120,9 @@ def install(
         dest = install_source(entry, agent_dest(project))
         console.print(f"[green]Installed agent[/] {entry_id} → {dest}")
     elif etype == "mcp":
-        config_path = install_mcp(entry)
-        console.print(f"[green]Added MCP server[/] {entry_id} → {config_path}")
+        config_path = install_mcp(entry, user_mcp_config() if global_ else None)
+        scope = "every session" if global_ else "this project"
+        console.print(f"[green]Added MCP server[/] {entry_id} ({scope}) → {config_path}")
         env = entry.get("mcp", {}).get("env") or {}
         placeholders = [k for k, v in env.items() if isinstance(v, str) and v.startswith("${")]
         if placeholders:

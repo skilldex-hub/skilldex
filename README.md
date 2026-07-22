@@ -31,6 +31,7 @@ pip install skilldex        # or: uv tool install skilldex
 | `skilldex search <query> [-t skill\|agent\|mcp]` | Search the registry |
 | `skilldex show <id>` | Full registry entry as JSON |
 | `skilldex install <id> [--project]` | Install a skill/agent (user or project scope) or add an MCP server to `.mcp.json` |
+| `skilldex install <id> --global` | MCP servers: register user-wide, available in every session |
 | `skilldex list` | Everything installed locally |
 | `skilldex validate <path>` | Lint a `SKILL.md`, subagent `.md`, or registry entry `.json` |
 | `skilldex audit` | Scan local Claude Code config for problems (broken frontmatter, plaintext secrets in `.mcp.json`, …) |

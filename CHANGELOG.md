@@ -4,6 +4,9 @@
 
 - Project moved to the skilldex-hub organization: registry now lives at
   https://skilldex-hub.github.io/ and the default index URL points there.
+- New `skilldex install <id> --global` for MCP servers: registers the server
+  user-wide (in `~/.claude.json`) so it loads in every session, instead of
+  only the current project's `.mcp.json`.
 
 ## 0.1.0 — 2026-07-21
 
