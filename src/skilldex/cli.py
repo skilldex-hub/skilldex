@@ -113,6 +113,14 @@ def install(
             f"[yellow]Note:[/] {etype}s are user-wide by default — --global only changes "
             "MCP installs. Installing normally."
         )
+    try:
+        _do_install(entry, entry_id, etype, project, global_)
+    except (httpx.HTTPError, FileNotFoundError, OSError) as exc:
+        console.print(f"[red]Install failed:[/] {exc}")
+        raise typer.Exit(2) from exc
+
+
+def _do_install(entry: dict, entry_id: str, etype: str, project: bool, global_: bool) -> None:
     if etype == "skill":
         dest = install_source(entry, skill_dest(project))
         console.print(f"[green]Installed skill[/] {entry_id} → {dest}")

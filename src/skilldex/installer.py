@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
+import io
 import json
+import tarfile
 from pathlib import Path
 
 import httpx
-
-GITHUB_API = "https://api.github.com"
 
 MCP_SERVER_KEYS = ("type", "command", "args", "env", "url", "headers")
 
@@ -23,37 +23,60 @@ def agent_dest(project: bool) -> Path:
 
 
 def install_source(entry: dict, dest_root: Path) -> Path:
-    """Download the entry's source directory from GitHub into dest_root/<id>."""
+    """Download the entry's source directory into dest_root/<id>.
+
+    Fetches the repo tarball from codeload.github.com — unlike the GitHub
+    contents API this is not rate-limited, so installs keep working from
+    shared IPs and CI.
+    """
     source = entry["source"]
+    ref = source.get("ref") or "HEAD"
+    url = f"https://codeload.github.com/{source['repo']}/tar.gz/{ref}"
+    response = httpx.get(url, follow_redirects=True, timeout=120)
+    response.raise_for_status()
     dest = dest_root / entry["id"]
-    dest.mkdir(parents=True, exist_ok=True)
-    _download_dir(source["repo"], source["path"], source.get("ref"), dest)
+    extracted = extract_subdir(response.content, source.get("path", ""), dest)
+    if extracted == 0:
+        raise FileNotFoundError(
+            f"path {source.get('path')!r} not found in {source['repo']}@{ref}"
+        )
     return dest
 
 
-def _list_contents(repo: str, path: str, ref: str | None) -> list[dict]:
-    response = httpx.get(
-        f"{GITHUB_API}/repos/{repo}/contents/{path}",
-        params={"ref": ref} if ref else None,
-        headers={"Accept": "application/vnd.github+json"},
-        follow_redirects=True,
-        timeout=30,
-    )
-    response.raise_for_status()
-    data = response.json()
-    return data if isinstance(data, list) else [data]
-
-
-def _download_dir(repo: str, path: str, ref: str | None, dest: Path) -> None:
-    for item in _list_contents(repo, path, ref):
-        if item["type"] == "dir":
-            subdir = dest / item["name"]
-            subdir.mkdir(exist_ok=True)
-            _download_dir(repo, item["path"], ref, subdir)
-        elif item["type"] == "file" and item.get("download_url"):
-            response = httpx.get(item["download_url"], follow_redirects=True, timeout=30)
-            response.raise_for_status()
-            (dest / item["name"]).write_bytes(response.content)
+def extract_subdir(tar_bytes: bytes, path: str, dest: Path) -> int:
+    """Extract files under `path` (relative to repo root) from a GitHub
+    tarball into dest, stripping the leading archive directory. Returns the
+    number of files written."""
+    prefix = path.strip("/")
+    if prefix == ".":
+        prefix = ""
+    dest.mkdir(parents=True, exist_ok=True)
+    dest_resolved = dest.resolve()
+    written = 0
+    with tarfile.open(fileobj=io.BytesIO(tar_bytes), mode="r:gz") as tar:
+        for member in tar:
+            if not member.isfile():
+                continue
+            parts = member.name.split("/", 1)  # "<repo>-<ref>/<relpath>"
+            if len(parts) < 2:
+                continue
+            rel = parts[1]
+            if prefix:
+                if not (rel == prefix or rel.startswith(prefix + "/")):
+                    continue
+                rel = rel[len(prefix) :].lstrip("/")
+            if not rel:
+                continue
+            target = dest / rel
+            if not target.resolve().is_relative_to(dest_resolved):
+                continue  # path traversal guard
+            target.parent.mkdir(parents=True, exist_ok=True)
+            fileobj = tar.extractfile(member)
+            if fileobj is None:
+                continue
+            target.write_bytes(fileobj.read())
+            written += 1
+    return written
 
 
 def user_mcp_config() -> Path:
